@@ -1,50 +1,75 @@
 import random
 import csv
+import string
 
-# Get user input for column names
-num_of_columns = int(input("Enter the number of columns"))
-column_names = []
-for i in range(num_of_columns):
-    user_input = input(f"Enter column name for column {i+1}: ")
-    column_names.append(user_input)
+def get_user_input(message):
+    return input(message)
 
-# Generate random values for an 8x8 grid
-grid = [[random.randint(0, 999999) for _ in range(8)] for _ in range(8)]
+def generate_random_data(choice):
+    if choice == "integer":
+        return str(random.randint(0, 999999)).zfill(6)
+    elif choice == "string":
+        return ''.join(random.choices(string.ascii_letters + string.digits, k=6))
 
-# Print the column names
-for name in column_names:
-    print(name.ljust(8), end="")
-print()
+def generate_column_data(choice, size):
+    return [generate_random_data(choice) for _ in range(size)]
 
-# Print the grid with column names
-for row in grid:
-    for value in row:
-        print(str(value).zfill(6), end=" ")
+def generate_grid(num_columns, column_names, choice):
+    return {col_name: generate_column_data(choice, 8) for col_name in column_names[:num_columns]}
+
+def print_grid(grid):
+    for col_name, data in grid.items():
+        print(col_name.ljust(8), end="")
     print()
+    for i in range(8):
+        for col_name, data in grid.items():
+            print(str(data[i]).ljust(8), end="")
+        print()
 
-# Get user input for the column name to analyze
-point_to_analyze = input("Enter the data point you would like to analyze: ")
+def find_positions(grid, column_name, point):
+    positions = []
+    for i, value in enumerate(grid[column_name]):
+        if value == point:
+            positions.append(i)
+    return positions
 
-# Search for the value in the specified column
-positions = []
-column_index = column_names.index(point_to_analyze)
-for i in range(8):
-    if grid[i][column_index] == point_to_analyze:
-        positions.append((i, column_index))
+def save_to_csv(filename, grid):
+    with open(filename, "w", newline="") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=grid.keys())
+        writer.writeheader()
+        writer.writerows(zip(*[grid[col_name] for col_name in grid]))
 
-# Print the positions of the value
-if positions:
-    print(f"The value {point_to_analyze} is found at the following positions:")
-    for position in positions:
-        print(f"Row: {position[0]}, Column: {position[1]}")
-else:
-    print(f"The value {point_to_analyze} is not found in the specified column.")
+    print(f"The grid data has been saved to '{filename}'.")
 
-# Save the grid to a CSV file
-csv_filename = "grid_data.csv"
-with open(csv_filename, "w", newline="") as csv_file:
-    writer = csv.writer(csv_file)
-    writer.writerow(column_names)
-    writer.writerows(grid)
+def main():
+    num_columns = int(get_user_input("Enter the number of columns: "))
+    column_names = [get_user_input(f"Enter column name for column {i+1}: ") for i in range(num_columns)]
 
-print(f"The grid data has been saved to '{csv_filename}'.")
+    choice = get_user_input("Enter 'integer' or 'string' for data type: ")
+    while choice not in ['integer', 'string']:
+        choice = get_user_input("Invalid input. Please enter 'integer' or 'string': ")
+
+    grid = generate_grid(num_columns, column_names, choice)
+
+    print_grid(grid)
+
+    point_to_analyze = get_user_input("Enter the data point you would like to analyze: ")
+
+    positions = []
+    for col_name in column_names:
+        if point_to_analyze in grid[col_name]:
+            col_positions = find_positions(grid, col_name, point_to_analyze)
+            positions.extend([(i, col_name) for i in col_positions])
+
+    if positions:
+        print(f"The value {point_to_analyze} is found at the following positions:")
+        for position in positions:
+            print(f"Row: {position[0]}, Column: {position[1]}")
+    else:
+        print(f"The value {point_to_analyze} is not found in any column.")
+
+    csv_filename = "grid_data.csv"
+    save_to_csv(csv_filename, grid)
+
+if __name__ == "__main__":
+    main()

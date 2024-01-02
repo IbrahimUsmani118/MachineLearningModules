@@ -1,0 +1,34 @@
+[
+    {
+        "statement": "I love this product",
+        "sentiment": "positive"
+    },
+    {
+        "statement": "This is not good",
+        "sentiment": "negative"
+    },
+    {
+        "statement": "Great experience",
+        "sentiment": "positive"
+    },
+    {
+        "statement": "I'm disappointed",
+        "sentiment": "negative"
+    },
+    {
+        "statement": "The service was excellent",
+        "sentiment": "positive"
+    },
+    {
+        "statement": "The food was awful",
+        "sentiment": "negative"
+    },
+    {
+        "statement": "Absolutely outstanding",
+        "sentiment": "positive"
+    },
+    {
+        "statement": "This is terrible",
+        "sentiment": "negative"
+    }
+]
