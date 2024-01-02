@@ -2,8 +2,9 @@ import random
 import csv
 
 # Get user input for column names
+num_of_columns = int(input("Enter the number of columns"))
 column_names = []
-for i in range(8):
+for i in range(num_of_columns):
     user_input = input(f"Enter column name for column {i+1}: ")
     column_names.append(user_input)
 
